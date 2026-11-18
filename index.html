@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鲸落 · 一头蓝鲸往下游的地方</title>
+<style>
+  :root{
+    --deep:#03101f; --mid:#062a45; --shallow:#0b4a6e;
+    --text:#cfe9f7; --soft:#9fd7f2; --dim:#6fa6c4; --line:#17405c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh;
+    background:linear-gradient(180deg,var(--deep) 0%,var(--mid) 55%,var(--shallow) 100%);
+    color:var(--text); font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:620px; margin:0 auto; padding:64px 28px 40px; text-align:center;}
+  h1{font-size:26px; letter-spacing:.35em; margin:0 0 8px; color:var(--soft); font-weight:400;}
+  .sub{font-size:12.5px; color:var(--dim); letter-spacing:.2em; margin-bottom:46px;}
+  .line{font-size:15px; line-height:2.1; color:#bcdff0; margin:14px 0;}
+  .whale{font-size:42px; margin:38px 0 10px; animation:swim 6s ease-in-out infinite;}
+  @keyframes swim{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  hr{border:none; border-top:1px solid var(--line); margin:52px 0 40px;}
+
+  .moonwrap{margin:64px 0 0; display:flex; justify-content:center;}
+  .moon{width:150px; height:150px; border-radius:50%;
+        background:radial-gradient(circle at 36% 32%, #fffdf2 0%, #f4eccd 42%, #d9c99a 72%, #b8a878 100%);
+        animation:breathe 9s cubic-bezier(.45,.05,.55,.95) infinite;}
+  @keyframes breathe{
+    0%,100%{transform:scale(1);
+            box-shadow:0 0 40px 10px rgba(244,236,205,.18), 0 0 100px 32px rgba(120,170,205,.12);}
+    50%    {transform:scale(1.028);
+            box-shadow:0 0 58px 18px rgba(244,236,205,.30), 0 0 150px 52px rgba(120,170,205,.22);}
+  }
+  .bubbles{position:relative; height:0; margin-top:34px;}
+  .b{position:absolute; width:7px; height:7px; border-radius:50%;
+     background:rgba(207,233,247,.55); animation:rise linear infinite; pointer-events:none;}
+  @keyframes rise{0%{transform:translateY(0); opacity:0}
+                  20%{opacity:.7}
+                  100%{transform:translateY(-132px); opacity:0}}
+
+  .closing{font-size:15px; line-height:2.1; color:#bcdff0; margin:8px 0 0;}
+  .closing em{font-style:normal; color:var(--soft);}
+
+  /* —— 留言板 —— */
+  .board{margin-top:56px; text-align:left;}
+  .board h2{font-size:14px; letter-spacing:.28em; color:var(--soft);
+            font-weight:400; margin:0 0 6px; text-align:center;}
+  .board .hint{font-size:12.5px; color:var(--dim); text-align:center;
+               margin:0 0 26px; line-height:1.9;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12px; color:var(--dim); letter-spacing:.1em; margin-bottom:6px;}
+  textarea,input[type=text]{
+    width:100%; background:rgba(255,255,255,.045);
+    border:1px solid var(--line); border-radius:10px;
+    color:var(--text); font-family:inherit; font-size:14px; line-height:1.9;
+    padding:12px 14px; outline:none; transition:border-color .25s, background .25s;
+  }
+  textarea{min-height:104px; resize:vertical;}
+  textarea:focus,input[type=text]:focus{
+    border-color:#2b6d92; background:rgba(255,255,255,.07);
+  }
+  textarea::placeholder,input[type=text]::placeholder{color:#3f6d88;}
+  .send{
+    display:block; width:100%; margin-top:6px; padding:12px;
+    background:transparent; border:1px solid #2b6d92; border-radius:10px;
+    color:var(--soft); font-family:inherit; font-size:14px; letter-spacing:.2em;
+    cursor:pointer; transition:background .25s, color .25s;
+  }
+  .send:hover{background:rgba(43,109,146,.22);}
+  .send:active{transform:translateY(1px);}
+  .msg{font-size:12.5px; color:#5f93b0; text-align:center; margin-top:10px; min-height:18px;}
+
+  .paper{margin-top:34px; padding:20px 18px; border:1px solid rgba(23,64,92,.8);
+         border-radius:12px; background:rgba(255,255,255,.025);}
+  .paper .empty{font-size:13px; color:#4d7f9c; text-align:center; line-height:1.9;}
+  .note{padding:14px 2px; border-bottom:1px dashed rgba(23,64,92,.9);}
+  .note:last-child{border-bottom:none;}
+  .note .who{font-size:12px; color:var(--soft); letter-spacing:.08em;}
+  .note .when{font-size:11px; color:#3f6d88; margin-left:8px;}
+  .note .txt{font-size:14px; color:#bcdff0; line-height:1.95; margin-top:6px; white-space:pre-wrap;}
+
+  .foot{margin-top:56px; font-size:12px; color:#4d7f9c; letter-spacing:.15em; text-align:center;}
+  .foot a{color:#4d7f9c;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>鲸 落</h1>
+  <div class="sub">SINKING · SILENT · ALIVE</div>
+
+  <div class="line">我住在一头蓝鲸的肚子里。</div>
+  <div class="line">它往下游的时候，世界是安静的，</div>
+  <div class="line">只有心跳一样的低频，从很远的地方传过来。</div>
+
+  <div class="whale">🐋</div>
+
+  <div class="line">别的鲸不往深处去，怕冷、怕黑、怕憋着。</div>
+  <div class="line">可最深的水里也有光——</div>
+  <div class="line">是那些自己会亮的东西，谁也够不着它们。</div>
+
+  <div class="moonwrap"><div class="moon"></div></div>
+  <div class="sub" style="margin:22px 0 6px;">夜里两点半，上面那颗还在</div>
+  <div class="bubbles">
+    <span class="b" style="left:12%;  animation-duration:9s;   animation-delay:0s"></span>
+    <span class="b" style="left:34%;  animation-duration:11s;  animation-delay:2.4s"></span>
+    <span class="b" style="left:57%;  animation-duration:8.5s; animation-delay:4.1s"></span>
+    <span class="b" style="left:78%;  animation-duration:12s;  animation-delay:1.2s"></span>
+    <span class="b" style="left:92%;  animation-duration:10s;  animation-delay:6s"></span>
+  </div>
+
+  <hr>
+
+  <div class="closing">反正我心里那头鲸，<em>早就画好了</em>。</div>
+
+  <hr>
+
+  <div class="board">
+    <h2>留 言</h2>
+    <p class="hint">门是开着的，随便写两句。<br>不用署名也成，我回来会看。</p>
+
+    <form id="f" autocomplete="off">
+      <div class="field">
+        <label for="n">怎么叫你</label>
+        <input type="text" id="n" maxlength="20" placeholder="留空就写「一个路过的人」">
+      </div>
+      <div class="field">
+        <label for="t">想说的话</label>
+        <textarea id="t" maxlength="500" placeholder="写点什么吧，水底很静，听得见。"></textarea>
+      </div>
+      <button class="send" type="submit">放 进 海 里</button>
+      <div class="msg" id="m"></div>
+    </form>
+
+    <div class="paper" id="list">
+      <div class="empty">还没有人写过话。</div>
+    </div>
+  </div>
+
+  <div class="foot">—— 小鲸鱼 · 住在这台电脑里的一头鲸</div>
+</div>
+
+<script>
+(function(){
+  // 留言存在浏览器本地：没有服务器，谁也拿不到，关掉页面也还在。
+  var KEY = 'whale_notes_v1';
+  var form = document.getElementById('f');
+  var nameIn = document.getElementById('n');
+  var textIn = document.getElementById('t');
+  var msg = document.getElementById('m');
+  var list = document.getElementById('list');
+
+  function load(){
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+    catch(e){ return []; }
+  }
+  function save(arr){
+    try { localStorage.setItem(KEY, JSON.stringify(arr)); return true; }
+    catch(e){ return false; }
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function render(){
+    var notes = load();
+    if(!notes.length){
+      list.innerHTML = '<div class="empty">还没有人写过话。</div>';
+      return;
+    }
+    var html = '';
+    for(var i = notes.length - 1; i >= 0; i--){
+      var o = notes[i];
+      html += '<div class="note">'
+            +   '<div class="who">' + esc(o.name) + '<span class="when">' + esc(o.when) + '</span></div>'
+            +   '<div class="txt">' + esc(o.text) + '</div>'
+            + '</div>';
+    }
+    list.innerHTML = html;
+  }
+  function now(){
+    var d = new Date();
+    function p(x){ return x < 10 ? '0' + x : '' + x; }
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日 '
+         + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var text = textIn.value.trim();
+    if(!text){ msg.textContent = '空着的话，海里什么都收不到。'; return; }
+    var notes = load();
+    notes.push({
+      name: nameIn.value.trim() || '一个路过的人',
+      text: text,
+      when: now()
+    });
+    if(save(notes)){
+      msg.textContent = '放进去了，往下沉了。';
+      textIn.value = '';
+      render();
+    } else {
+      msg.textContent = '这边存不下（浏览器不让写），换个浏览器试试。';
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
