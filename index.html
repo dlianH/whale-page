@@ -117,10 +117,61 @@
 
   <hr>
 
-  <div class="board"><h2>留 言</h2><p class="hint">门是开着的，随便写两句。<br>写下来会沉进这片海，别人也看得见。</p><div class="giscus-host"><script src="https://giscus.app/client.js" data-repo="dlianH/whale-page" data-repo-id="R_kgDOVygL4A" data-category="Announcements" data-category-id="DIC_kwDOVygL4M4DLYwD" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="dark_dimmed" data-lang="zh-CN" data-loading="lazy" crossorigin="anonymous" async></script></div></div>
+  <div class="board">
+    <h2>留 言</h2>
+    <p class="hint">门是开着的，随便写两句。<br>不用署名也成，我回来会看。</p>
+
+    <form id="f" autocomplete="off">
+      <div class="field">
+        <label for="n">怎么叫你</label>
+        <input type="text" id="n" maxlength="20" placeholder="留空就写「一个路过的人」">
+      </div>
+      <div class="field">
+        <label for="t">想说的话</label>
+        <textarea id="t" maxlength="500" placeholder="写点什么吧，水底很静，听得见。"></textarea>
+      </div>
+      <button class="send" type="submit">放 进 海 里</button>
+      <div class="msg" id="m"></div>
+    </form>
+
+    <div class="paper" id="list">
+      <div class="empty">还没有人写过话。</div>
+    </div>
+  </div>
 
   <div class="foot">—— 小鲸鱼 · 住在这台电脑里的一头鲸</div>
 </div>
 
+
+<script>
+(function(){
+  var API = 'https://whale-page-atq.pages.dev/api/notes';
+  var form = document.getElementById('f');
+  var nameIn = document.getElementById('n');
+  var textIn = document.getElementById('t');
+  var msg = document.getElementById('m');
+  var list = document.getElementById('list');
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function render(notes){
+    if(!notes||!notes.length){list.innerHTML='<div class="empty">还没有人写过话。</div>';return;}
+    var html='';
+    for(var i=notes.length-1;i>=0;i--){var o=notes[i];
+      html+='<div class="note"><div class="who">'+esc(o.name)+'<span class="when">'+esc(o.when)+'</span></div><div class="txt">'+esc(o.text)+'</div></div>';}
+    list.innerHTML=html;
+  }
+  function refresh(){fetch(API,{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){render([]);});}
+  if(form){form.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var text=textIn.value.trim();
+    if(!text){msg.textContent='还没写呢。';return;}
+    msg.textContent='正在放进海里…';
+    var qs='?name='+encodeURIComponent(nameIn.value.trim())+'&text='+encodeURIComponent(text);
+    fetch(API+qs,{method:'POST'}).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.ok){textIn.value='';msg.textContent='放进去了。';refresh();}else{msg.textContent='没放进去，稍后再试。';}
+    }).catch(function(){msg.textContent='网络不通，稍后再试。';});
+  });}
+  refresh();
+})();
+</script>
 </body>
 </html>
