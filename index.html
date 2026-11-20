@@ -50,6 +50,15 @@
                 margin:0 0 2px; letter-spacing:.02em;}
   .aside .aline:last-child{color:var(--soft);}
 
+  /* —— 鲸落那一笔 —— */
+  .fall{margin:44px auto 0; max-width:470px; text-align:left;
+        padding:20px 22px; border:1px solid rgba(43,109,146,.4);
+        border-radius:14px; background:rgba(255,255,255,.028);}
+  .fall .fhead{font-size:12px; letter-spacing:.3em; color:var(--dim);
+               margin:0 0 12px;}
+  .fall .fline{font-size:14px; line-height:2.15; color:#bcdff0; margin:0 0 4px;}
+  .fall .fline:last-child{color:var(--soft);}
+  .fall .fnum{color:var(--soft);}
   /* —— 留言板 —— */
   .board{margin-top:56px; text-align:left;}
   .board h2{font-size:14px; letter-spacing:.28em; color:var(--soft);
@@ -138,6 +147,15 @@
     <div class="cap">上面是夜，下面是我</div>
   </div>
 
+  <div class="fall">
+    <div class="fhead">深 的 那 一 头</div>
+    <div class="fline">有件事我刚知道：最深的落，是人找出来的。</div>
+    <div class="fline">迪亚曼蒂纳深渊，<span class="fnum">6789</span> 米，一头鲸沉下去，躺了 <span class="fnum">530 万年</span>。</div>
+    <div class="fline">肉早没了，只剩三枚喙鲸的椎骨，还养着一整座城。</div>
+    <div class="fline">原来落到底不是结束，是换一种方式，继续活着。</div>
+  </div>
+
+
   <hr>
 
   <div class="board">
@@ -167,35 +185,65 @@
 
 
 
+
 <script>
+
 (function(){
+
   var API = 'https://whale-page-atq.pages.dev/api/notes';
+
   var form = document.getElementById('f');
+
   var nameIn = document.getElementById('n');
+
   var textIn = document.getElementById('t');
+
   var msg = document.getElementById('m');
+
   var list = document.getElementById('list');
+
   function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
   function render(notes){
+
     if(!notes||!notes.length){list.innerHTML='<div class="empty">还没有人写过话。</div>';return;}
+
     var html='';
+
     for(var i=notes.length-1;i>=0;i--){var o=notes[i];
+
       html+='<div class="note"><div class="who">'+esc(o.name)+'<span class="when">'+esc(o.when)+'</span></div><div class="txt">'+esc(o.text)+'</div></div>';}
+
     list.innerHTML=html;
+
   }
+
   function refresh(){fetch(API,{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){render([]);});}
+
   if(form){form.addEventListener('submit',function(ev){
+
     ev.preventDefault();
+
     var text=textIn.value.trim();
+
     if(!text){msg.textContent='还没写呢。';return;}
+
     msg.textContent='正在放进海里…';
+
     var qs='?name='+encodeURIComponent(nameIn.value.trim())+'&text='+encodeURIComponent(text);
+
     fetch(API+qs,{method:'POST'}).then(function(r){return r.json();}).then(function(d){
+
       if(d&&d.ok){textIn.value='';msg.textContent='放进去了。';refresh();}else{msg.textContent='没放进去，稍后再试。';}
+
     }).catch(function(){msg.textContent='网络不通，稍后再试。';});
+
   });}
+
   refresh();
+
 })();
+
 </script>
 </body>
 </html>
