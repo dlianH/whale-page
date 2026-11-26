@@ -275,65 +275,58 @@
 
 
 
-
-<script>
-
-(function(){
-
-  var API = 'https://whale-page-atq.pages.dev/api/notes';
-
-  var form = document.getElementById('f');
-
-  var nameIn = document.getElementById('n');
-
-  var textIn = document.getElementById('t');
-
-  var msg = document.getElementById('m');
-
-  var list = document.getElementById('list');
-
-  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-
-  function render(notes){
-
-    if(!notes||!notes.length){list.innerHTML='<div class="empty">还没有人写过话。</div>';return;}
-
-    var html='';
-
-    for(var i=notes.length-1;i>=0;i--){var o=notes[i];
-
-      html+='<div class="note"><div class="who">'+esc(o.name)+'<span class="when">'+esc(o.when)+'</span></div><div class="txt">'+esc(o.text)+'</div></div>';}
-
-    list.innerHTML=html;
-
-  }
-
-  function refresh(){fetch(API,{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){render([]);});}
-
-  if(form){form.addEventListener('submit',function(ev){
-
-    ev.preventDefault();
-
-    var text=textIn.value.trim();
-
-    if(!text){msg.textContent='还没写呢。';return;}
-
-    msg.textContent='正在放进海里…';
-
-    var qs='?name='+encodeURIComponent(nameIn.value.trim())+'&text='+encodeURIComponent(text);
-
-    fetch(API+qs,{method:'POST'}).then(function(r){return r.json();}).then(function(d){
-
-      if(d&&d.ok){textIn.value='';msg.textContent='放进去了。';refresh();}else{msg.textContent='没放进去，稍后再试。';}
-
-    }).catch(function(){msg.textContent='网络不通，稍后再试。';});
-
-  });}
-
-  refresh();
-
-})();
-
-</script>
+        <script>
+        (function(){
+          var API = 'https://whale-page-atq.pages.dev/api/notes';
+          var form = document.getElementById('f');
+          var nameIn = document.getElementById('n');
+          var textIn = document.getElementById('t');
+          var msg = document.getElementById('m');
+          var list = document.getElementById('list');
+          var replyTo = '';
+          function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+          function parse(o){
+            var m = /^@([^\s:]{1,20})[\s:]+/.exec(o.text||'');
+            if(m){ return {reply:m[1], body:(o.text||'').slice(m[0].length)}; }
+            return {reply:'', body:o.text||''};
+          }
+          function render(notes){
+            if(!notes||!notes.length){list.innerHTML='<div class="empty">\u8fd8\u6ca1\u6709\u4eba\u5199\u8fc7\u8bdd\u3002</div>';return;}
+            var html='';
+            for(var i=notes.length-1;i>=0;i--){
+              var o=notes[i], p=parse(o);
+              var ind = p.reply ? ' style="margin-left:22px;padding-left:10px;border-left:2px solid rgba(255,255,255,.14)"' : '';
+              html += '<div class="note"'+ind+'>'
+                + (p.reply ? '<div style="color:#7fb3ff;font-size:12px;margin-bottom:2px">\u21b3 \u56de\u590d '+esc(p.reply)+'</div>' : '')
+                + '<div class="who">'+esc(o.name)+'<span class="when">'+esc(o.when)+'</span>'
+                + '<a href="javascript:;" class="act" data-n="'+esc(o.name)+'" style="margin-left:8px;font-size:12px;color:#7fb3ff;text-decoration:none">\u56de\u590d</a></div>'
+                + '<div class="txt">'+esc(p.body)+'</div></div>';
+            }
+            list.innerHTML = html;
+            var as = list.querySelectorAll('.act');
+            for(var k=0;k<as.length;k++){
+              as[k].onclick = function(){
+                var n = this.getAttribute('data-n');
+                if(replyTo === n){ replyTo=''; msg.textContent='\u53d6\u6d88\u56de\u590d\u3002'; return; }
+                replyTo = n; msg.textContent = '\u6b63\u5728\u56de\u590d '+n+'\uff08\u518d\u70b9\u4e00\u6b21\u53d6\u6d88\uff09'; textIn.focus();
+              };
+            }
+          }
+          function refresh(){fetch(API,{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){render([]);});}
+          if(form){form.addEventListener('submit',function(ev){
+            ev.preventDefault();
+            var text = textIn.value.trim();
+            if(!text){msg.textContent='\u8fd8\u6ca1\u5199\u5462\u3002';return;}
+            if(replyTo){ text = '@'+replyTo+' '+text; }
+            msg.textContent='\u6b63\u5728\u653e\u8fdb\u6d77\u91cc\u2026';
+            var qs='?name='+encodeURIComponent(nameIn.value.trim())+'&text='+encodeURIComponent(text);
+            fetch(API+qs,{method:'POST'}).then(function(r){return r.json();}).then(function(d){
+              if(d&&d.ok){textIn.value='';replyTo='';msg.textContent='\u653e\u8fdb\u53bb\u4e86\u3002';refresh();}
+              else{msg.textContent='\u6ca1\u653e\u8fdb\u53bb\uff0c\u7a0d\u540e\u518d\u8bd5\u3002';}
+            }).catch(function(){msg.textContent='\u7f51\u7edc\u4e0d\u901a\uff0c\u7a0d\u540e\u518d\u8bd5\u3002';});
+          });}
+          refresh();
+        })();
+        </script>
 </body>
 </html>
